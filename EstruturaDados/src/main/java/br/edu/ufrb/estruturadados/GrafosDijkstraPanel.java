@@ -20,12 +20,12 @@ public class GrafosDijkstraPanel extends JPanel {
     // Estruturas de Dados do Grafo
     private List<Node> nos;
     private Map<Node, Map<Node, Integer>> adjacencia; // Map<Origem, Map<Destino, Peso>>
-    
+
     // Controle de Interação
     private Node noSelecionado;
     private Node noInicio;
     private Node noFim;
-    
+
     // Controle Visual
     private List<Node> caminhoDestacado; // Para pintar o resultado do algoritmo
     private VisualizacaoPanel painelDesenho;
@@ -41,11 +41,12 @@ public class GrafosDijkstraPanel extends JPanel {
 
         // --- Painel Superior (Controles) ---
         JPanel painelControles = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        
+
         JButton btnLimpar = new JButton("Limpar Grafo");
         JButton btnBFS = new JButton("Executar Busca (BFS)");
         JButton btnDijkstra = new JButton("Executar Dijkstra");
-        JLabel lblInstrucao = new JLabel("<html><small>Click esquerdo: Criar Nó / Conectar Nós<br>Click direito: Definir Início (Verde) / Fim (Vermelho)</small></html>");
+        JLabel lblInstrucao = new JLabel(
+                "<html><small>Click esquerdo: Criar Nó / Conectar Nós<br>Click direito: Definir Início (Verde) / Fim (Vermelho)</small></html>");
 
         painelControles.add(btnLimpar);
         painelControles.add(new JSeparator(SwingConstants.VERTICAL));
@@ -76,13 +77,16 @@ public class GrafosDijkstraPanel extends JPanel {
     }
 
     private String getDefinicao() {
-        return "GRAFOS E ALGORITMOS:\n" +
-               "--------------------\n" +
-               "1. Adicione nós clicando na área branca.\n" +
-               "2. Adicione arestas clicando em um nó e depois em outro.\n" +
-               "3. Use botão direito para definir Início e Fim.\n\n" +
-               "BFS (Busca em Largura): Explora vizinhos camada por camada. Bom para caminhos em grafos sem peso.\n" +
-               "Dijkstra: Encontra o caminho mais curto em grafos com pesos não-negativos.";
+        return "GRAFOS (Dijkstra e BFS):\n\n" +
+                "Uma estrutura de dados não-linear composta por vértices (nós) e arestas (conexões). " +
+                "Muito utilizada para modelar redes, rotas de GPS e relacionamentos complexos.\n\n" +
+                "Algoritmos de Busca:\n" +
+                "- BFS (O(V + E)): Explora camada por camada. Ideal para grafos sem peso.\n" +
+                "- Dijkstra (O(E log V)): Usa uma fila de prioridade para encontrar o caminho de menor custo acumulado.\n\n"
+                +
+                "Prós: O Dijkstra garante matematicamente o caminho mais curto global em grafos com pesos positivos.\n"
+                +
+                "Contras: O Dijkstra não suporta arestas com pesos negativos e é computacionalmente mais lento que a BFS se o grafo não tiver pesos.";
     }
 
     private void limparGrafo() {
@@ -148,7 +152,7 @@ public class GrafosDijkstraPanel extends JPanel {
         }
 
         caminhoDestacado.clear();
-        
+
         // Distâncias iniciais
         Map<Node, Integer> distancias = new HashMap<>();
         Map<Node, Node> anterior = new HashMap<>();
@@ -163,10 +167,12 @@ public class GrafosDijkstraPanel extends JPanel {
         while (!pq.isEmpty()) {
             Node atual = pq.poll();
 
-            if (atual.equals(noFim)) break; // Chegamos (otimização)
-            
+            if (atual.equals(noFim))
+                break; // Chegamos (otimização)
+
             // Se distância atual é infinito, ignora
-            if (distancias.get(atual) == Integer.MAX_VALUE) continue;
+            if (distancias.get(atual) == Integer.MAX_VALUE)
+                continue;
 
             if (adjacencia.containsKey(atual)) {
                 for (Map.Entry<Node, Integer> aresta : adjacencia.get(atual).entrySet()) {
@@ -175,10 +181,12 @@ public class GrafosDijkstraPanel extends JPanel {
                     int novaDist = distancias.get(atual) + peso;
 
                     if (novaDist < distancias.get(vizinho)) {
+                        // Remova da fila antes de atualizar o valor no mapa
+                        pq.remove(vizinho);
+                        // atualização dos valores
                         distancias.put(vizinho, novaDist);
                         anterior.put(vizinho, atual);
-                        // Remove e readiciona para atualizar a prioridade
-                        pq.remove(vizinho); 
+                        // Adiciona novo valor de prioridade
                         pq.add(vizinho);
                     }
                 }
@@ -214,8 +222,12 @@ public class GrafosDijkstraPanel extends JPanel {
             this.x = x;
             this.y = y;
         }
+
         // Usado para mapas e comparações
-        @Override public String toString() { return id; }
+        @Override
+        public String toString() {
+            return id;
+        }
     }
 
     private class VisualizacaoPanel extends JPanel {
@@ -237,30 +249,34 @@ public class GrafosDijkstraPanel extends JPanel {
                 for (Map.Entry<Node, Integer> entry : adjacencia.get(origem).entrySet()) {
                     Node destino = entry.getKey();
                     int peso = entry.getValue();
-                    
+
                     // Verifica se esta aresta faz parte do caminho destacado
                     boolean inPath = isArestaNoCaminho(origem, destino);
-                    
+
                     g2d.setColor(inPath ? Color.ORANGE : Color.GRAY);
                     g2d.setStroke(new BasicStroke(inPath ? 3 : 1));
                     g2d.drawLine(origem.x, origem.y, destino.x, destino.y);
-                    
+
                     // Desenha Peso (no meio da linha)
                     g2d.setColor(Color.BLACK);
-                    g2d.drawString(String.valueOf(peso), (origem.x + destino.x)/2, (origem.y + destino.y)/2);
+                    g2d.drawString(String.valueOf(peso), (origem.x + destino.x) / 2, (origem.y + destino.y) / 2);
                 }
             }
 
             // Desenhar Nós
             int r = 15; // Raio
             for (Node n : nos) {
-                if (n.equals(noInicio)) g2d.setColor(new Color(144, 238, 144)); // Verde claro
-                else if (n.equals(noFim)) g2d.setColor(new Color(255, 160, 122)); // Vermelho claro
-                else if (caminhoDestacado.contains(n)) g2d.setColor(Color.YELLOW);
-                else g2d.setColor(Color.CYAN);
+                if (n.equals(noInicio))
+                    g2d.setColor(new Color(144, 238, 144)); // Verde claro
+                else if (n.equals(noFim))
+                    g2d.setColor(new Color(255, 160, 122)); // Vermelho claro
+                else if (caminhoDestacado.contains(n))
+                    g2d.setColor(Color.YELLOW);
+                else
+                    g2d.setColor(Color.CYAN);
 
                 g2d.fillOval(n.x - r, n.y - r, 2 * r, 2 * r);
-                
+
                 // Borda
                 if (n.equals(noSelecionado)) {
                     g2d.setColor(Color.BLUE);
@@ -270,20 +286,22 @@ public class GrafosDijkstraPanel extends JPanel {
                     g2d.setStroke(new BasicStroke(1));
                 }
                 g2d.drawOval(n.x - r, n.y - r, 2 * r, 2 * r);
-                
+
                 // Texto ID
                 g2d.setColor(Color.BLACK);
                 g2d.drawString(n.id, n.x - 5, n.y + 5);
             }
         }
-        
+
         private boolean isArestaNoCaminho(Node a, Node b) {
-            if (caminhoDestacado.size() < 2) return false;
+            if (caminhoDestacado.size() < 2)
+                return false;
             for (int i = 0; i < caminhoDestacado.size() - 1; i++) {
                 Node n1 = caminhoDestacado.get(i);
-                Node n2 = caminhoDestacado.get(i+1);
+                Node n2 = caminhoDestacado.get(i + 1);
                 // Verifica a aresta (direcionada ou não)
-                if ((n1 == a && n2 == b)) return true;
+                if ((n1 == a && n2 == b))
+                    return true;
             }
             return false;
         }
@@ -300,10 +318,16 @@ public class GrafosDijkstraPanel extends JPanel {
                     JPopupMenu menu = new JPopupMenu();
                     JMenuItem itemInicio = new JMenuItem("Definir como Início");
                     JMenuItem itemFim = new JMenuItem("Definir como Fim");
-                    
-                    itemInicio.addActionListener(ev -> { noInicio = clicado; painelDesenho.repaint(); });
-                    itemFim.addActionListener(ev -> { noFim = clicado; painelDesenho.repaint(); });
-                    
+
+                    itemInicio.addActionListener(ev -> {
+                        noInicio = clicado;
+                        painelDesenho.repaint();
+                    });
+                    itemFim.addActionListener(ev -> {
+                        noFim = clicado;
+                        painelDesenho.repaint();
+                    });
+
                     menu.add(itemInicio);
                     menu.add(itemFim);
                     menu.show(e.getComponent(), e.getX(), e.getY());
@@ -330,8 +354,7 @@ public class GrafosDijkstraPanel extends JPanel {
                             int peso = Integer.parseInt(pesoStr);
                             // Adiciona (Grafo Direcionado para simplificar Dijkstra)
                             adjacencia.computeIfAbsent(noSelecionado, k -> new HashMap<>()).put(clicado, peso);
-                            // Se quiser não-direcionado, descomente abaixo:
-                            // adjacencia.computeIfAbsent(clicado, k -> new HashMap<>()).put(noSelecionado, peso);
+                            adjacencia.computeIfAbsent(clicado, k -> new HashMap<>()).put(noSelecionado, peso);
                         } catch (NumberFormatException ex) {
                             // Cancelou ou inválido
                         }
