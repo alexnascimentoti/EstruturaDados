@@ -109,6 +109,7 @@ public class VisualizadorFrame extends JFrame {
             new ArvoreBinariaNaoOrdenadaPanel(),
             new ArvoreBinariaNaoBalanceadaPanel(),
             new HashMapPanel(),
+            new HashMapDinamicoPanel(),
             new ArvoreAVL(),
             new GrafosDijkstraPanel()
         };
@@ -130,6 +131,7 @@ public class VisualizadorFrame extends JFrame {
             "Árvore Binária Não Ordenada",
             "Árvore Binária de Busca (Não Balanceada)",
             "Hash Map Simples (Tabela Hash)",
+            "Hash Map Dinâmico (Linear Probing)",
             "Árvore AVL",
             "Grafos (BFS e Dijkstra)"
         };
