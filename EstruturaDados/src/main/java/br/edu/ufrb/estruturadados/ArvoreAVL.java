@@ -186,6 +186,7 @@ public class ArvoreAVL extends JPanel {
         private static final int RADIUS = 20;
         private static final int V_GAP = 60;
         private final Map<AVLNode, Point> positions = new HashMap<>();
+        private int minX, maxX, minY, maxY;
 
         public VisualizacaoPanel() {
             setBackground(Color.WHITE);
@@ -198,6 +199,12 @@ public class ArvoreAVL extends JPanel {
             Graphics2D g2d = (Graphics2D) g;
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
+            positions.clear();
+            minX = Integer.MAX_VALUE;
+            maxX = Integer.MIN_VALUE;
+            minY = Integer.MAX_VALUE;
+            maxY = Integer.MIN_VALUE;
+
             if (root != null) {
                 calculatePositions(root, getWidth() / 2, 40, getWidth() / 4);
                 drawEdges(g2d, root);
@@ -207,6 +214,12 @@ public class ArvoreAVL extends JPanel {
                 g2d.setColor(Tema.TEXT_SECONDARY);
                 g2d.drawString("Árvore vazia. Adicione elementos para visualizar.", getWidth() / 2 - 40, getHeight() / 2);
             }
+
+            int width = (maxX - minX) + 200;
+            int height = (maxY - minY) + 200;
+
+            setPreferredSize(new Dimension(width, height));
+            revalidate();
         }
 
         private void calculatePositions(AVLNode node, int x, int y, int offset) {
@@ -214,6 +227,12 @@ public class ArvoreAVL extends JPanel {
                 return;
             }
             positions.put(node, new Point(x, y));
+
+            minX = Math.min(minX, x);
+            maxX = Math.max(maxX, x);
+            minY = Math.min(minY, y);
+            maxY = Math.max(maxY, y);
+
             calculatePositions(node.left, x - offset, y + V_GAP, offset / 2);
             calculatePositions(node.right, x + offset, y + V_GAP, offset / 2);
         }

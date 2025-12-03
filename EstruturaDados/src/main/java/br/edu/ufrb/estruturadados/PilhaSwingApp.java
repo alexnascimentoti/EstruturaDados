@@ -42,7 +42,7 @@ public class PilhaSwingApp extends JPanel {
         add(painelControles, BorderLayout.NORTH);
 
         painelDesenho = new VisualizacaoPanel();
-        add(painelDesenho, BorderLayout.CENTER);
+        add(new JScrollPane(painelDesenho), BorderLayout.CENTER);
 
         JTextArea textoDefinicao = ComponentesUI.criarAreaTextoEstilizada();
         textoDefinicao.setText(getDefinicao());
@@ -161,6 +161,8 @@ public class PilhaSwingApp extends JPanel {
                 y += height + 10;
                 atual = atual.next;
             }
+            setPreferredSize(new Dimension(200, y));
+            revalidate();
         }
     }
 }
