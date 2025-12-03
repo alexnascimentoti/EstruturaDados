@@ -44,7 +44,7 @@ public class FilaSwingApp extends JPanel {
         add(painelControles, BorderLayout.NORTH);
 
         painelDesenho = new VisualizacaoPanel();
-        add(painelDesenho, BorderLayout.CENTER);
+        add(new JScrollPane(painelDesenho), BorderLayout.CENTER);
 
         JTextArea textoDefinicao = ComponentesUI.criarAreaTextoEstilizada();
         textoDefinicao.setText(getDefinicao());
@@ -170,6 +170,8 @@ public class FilaSwingApp extends JPanel {
                 x += nodeWidth + gap;
                 atual = atual.next;
             }
+            setPreferredSize(new Dimension(x, 200));
+            revalidate();
         }
     }
 }
